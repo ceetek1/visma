@@ -4,7 +4,7 @@
 **Branch:** `feature/p1-foundation` → merged into `main`
 **Status:** builds with 0 warnings, 26/26 tests pass, app runs and seeds demo data.
 
-This note explains what already exists, what each of you builds next, and how to build it so the pieces fit together without merge conflicts. Read sections 1–4 together, then jump to **your** section (5 or 6).
+This note explains what already exists, what each of you builds next, and how to build it so the pieces fit together without merge conflicts. Read sections 1–4 together, then open **your brief** (section 5).
 
 ---
 
@@ -151,103 +151,36 @@ public class VisitorServiceTests
 
 ---
 
-## 5. Person 2: Increment 1: Registration and hosts
+## 5. Your brief
 
-**Requirements:** FR-01 to FR-10 in [docs/02-srs.md](../02-srs.md).
-**Contracts:** `src/Visma.Core/Services/IVisitorService.cs`, `IHostService.cs` (read the XML comments; they say exactly what must succeed and fail).
+Each of you has a standalone brief with the exact business rules and user messages, a spec for every screen, the tests to write (with IDs), the documentation you own, a commit plan and a definition of done:
 
-### Files you create
+| Person | Brief | When you finish, fill in |
+|---|---|---|
+| Person 2: Registration and hosts | [P2-BRIEF.md](P2-BRIEF.md) | [HANDOFF-P2.md](HANDOFF-P2.md) |
+| Person 3: Visits and dashboard (QA lead) | [P3-BRIEF.md](P3-BRIEF.md) | [HANDOFF-P3.md](HANDOFF-P3.md) |
 
-```
-src/Visma.Core/Services/VisitorService.cs
-src/Visma.Core/Services/HostService.cs
-src/Visma.Web/Controllers/VisitorsController.cs     Index (search), Create, Edit, Details, Lookup
-src/Visma.Web/Controllers/HostsController.cs        Index, Create, Edit, ToggleActive (POST)
-src/Visma.Web/Models/VisitorViewModels.cs           (e.g. VisitorSearchViewModel, LookupViewModel)
-src/Visma.Web/Views/Visitors/*.cshtml
-src/Visma.Web/Views/Hosts/*.cshtml
-tests/Visma.Tests/Services/VisitorServiceTests.cs
-tests/Visma.Tests/Services/HostServiceTests.cs
-```
+## 6. Where your work meets (cross-team contract)
 
-### Shared files you edit (only these lines)
+Your increments link to each other through these URLs. Both briefs repeat this table; don't change a URL without telling the other person.
 
-- `Program.cs`: uncomment the two **Person 2** `AddScoped` lines (the `using` is already there).
-- `visma.css`: only below `Feature styles: Person 2`.
-- `docs/04-test-plan.md`: your rows (TC-U20–U39, TC-I20–I39) and system tests TC-S03–S05.
-- `docs/03-design.md`: finalise *Sequence: register visitor*; add your classes to the class diagram.
+| From | To | URL | Show only if |
+|---|---|---|---|
+| P2 visitor list/details **Check in** | P3 check-in, visitor pre-selected | `/Visits/CheckIn?visitorId={id}` | `Nav.Exists("Visits", "CheckIn")` |
+| P3 check-in **Register them** | P2 register form, phone pre-filled | `/Visitors/Create?phone={term}` | `Nav.Exists("Visitors", "Create")` |
+| P3 visit log visitor name | P2 visitor details | `/Visitors/Details/{id}` | `Nav.Exists("Visitors", "Details")` |
 
-### Suggested order (≈ one commit each)
+**Shared files and who may edit what:**
 
-1. `feat(visitors): implement VisitorService registration with duplicate-phone check`
-2. `test(visitors): cover registration, duplicate phone and update rules`
-3. `feat(visitors): add VisitorsController list + search view`
-4. `feat(visitors): add register and edit forms with validation`
-5. `feat(visitors): add returning-visitor lookup (phone or e-mail)`. When lookup fails, offer "Register new visitor" with the phone pre-filled; when registering hits a duplicate, link to the existing visitor.
-6. `feat(visitors): add visitor details page with visit history` (`GetWithVisitsAsync`; reuse `_StatusBadge`)
-7. `feat(hosts): implement HostService`, then `test(hosts): …`
-8. `feat(hosts): add host directory list, add/edit forms`
-9. `feat(hosts): deactivate/reactivate host` (POST + antiforgery token; never delete)
-10. `docs: registration sequence diagram, test log rows, screenshots`
+| File | Person 2 | Person 3 |
+|---|---|---|
+| `Program.cs` | Uncomment the two Person 2 lines | Uncomment the Person 3 line |
+| `wwwroot/css/visma.css` | Only below "Person 2" marker | Only below "Person 3" marker |
+| `HomeController` + `Views/Home/Index.cshtml` | — | Owns (becomes the dashboard) |
+| `docs/03-design.md` | §4 (add classes), §5 | §4 (add classes), §6, §7 |
+| `docs/04-test-plan.md` | §2.3, rows S03–S05 | §2.4–2.6, §3 (QA lead) |
 
-### Done when
-
-- [ ] Sidebar *Visitors* and *Hosts* links lose their **soon** tag (automatic once your controllers exist)
-- [ ] Dashboard "Registration and hosts" increment shows **Ready**
-- [ ] Every rule in the `IVisitorService` / `IHostService` comments has a test
-- [ ] `dotnet build` 0 warnings, `dotnet test` all green
-- [ ] Screenshots of each page (light mode) saved for the report
-
----
-
-## 6. Person 3: Increment 2: Visits and dashboard
-
-**Requirements:** FR-11 to FR-17 in [docs/02-srs.md](../02-srs.md).
-**Contract:** `src/Visma.Core/Services/IVisitService.cs`.
-
-You don't need Person 2's code to start: find visitors through `IVisitorRepository` (`SearchAsync`, `FindByPhoneOrEmailAsync`) and hosts through `IHostRepository.GetActiveAsync()`, both already registered in DI.
-
-### Files you create
-
-```
-src/Visma.Core/Services/VisitService.cs
-src/Visma.Web/Controllers/VisitsController.cs       CheckIn (GET: find visitor → POST: host + purpose), CheckOut (POST), History
-src/Visma.Web/Models/VisitViewModels.cs             (CheckInViewModel, HistoryFilterViewModel, DashboardViewModel)
-src/Visma.Web/Views/Visits/*.cshtml
-tests/Visma.Tests/Services/VisitServiceTests.cs
-```
-
-### Shared files you edit
-
-- `Program.cs`: uncomment the **Person 3** `AddScoped<IVisitService, VisitService>()` line.
-- `HomeController.Index` + `Views/Home/Index.cshtml`: **you own the dashboard.** Replace the landing page with live figures from `GetDashboardStatsAsync()` and the on-site list with a **Check out** button per row. Keep the greeting and the `_VisitorPass` style if you like it. You can remove the "Project increments" panel once all three increments are merged.
-- `visma.css`: only below `Feature styles: Person 3`.
-- `docs/04-test-plan.md`: rows TC-U40–U59, TC-I40–I59, system tests TC-S06–S11, acceptance TC-A01–A05 (you're QA lead).
-- `docs/03-design.md`: finalise *Sequence: check in* and *Activity: visit lifecycle*.
-
-### Suggested order
-
-1. `feat(visits): implement VisitService.CheckInAsync with active-host and no-double-check-in rules`
-2. `test(visits): cover check-in rules with FakeClock`
-3. `feat(visits): implement CheckOutAsync (reject already checked-out)` + tests
-4. `feat(visits): add check-in screen (find visitor, choose host and purpose)`. If the visitor isn't found, link to registration with `Nav.Exists("Visitors", "Create")` so it degrades gracefully before Person 2 merges.
-5. `feat(visits): show visitor pass on successful check-in` (`_VisitorPass`)
-6. `feat(dashboard): live stats and on-site list with check-out`
-7. `feat(visits): visit history with date and host filters`
-8. `test(visits): integration test for full check-in → check-out flow`
-9. `docs: check-in sequence + activity diagrams, system and acceptance test log`
-
-**Time gotcha:** "today" means local midnight. Compute it from `clock.GetLocalNow().Date`, convert to UTC, then query `[startUtc, startUtc + 1 day)`. `FakeClock` sets local time = UTC, so tests stay predictable.
-
-### Done when
-
-- [ ] Check-in, check-out and history links lose their **soon** tag
-- [ ] Double check-in and double check-out are refused with clear messages (and tested)
-- [ ] Dashboard figures match the database
-- [ ] System and acceptance tables in `04-test-plan.md` filled in with results
-- [ ] Demo video script covers S1–S5 from the SRS
-
----
+Assembling the final PDF report: see [05-report-checklist.md](../05-report-checklist.md).
 
 ## 7. Changing the database
 

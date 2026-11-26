@@ -77,27 +77,36 @@ Tag new test classes with `[Trait("Level", "Unit")]` or `[Trait("Level", "Integr
 
 ### 2.3 Unit and integration tests: Increment 1 (Person 2, TO DO)
 
-Suggested cases; add rows as you write them.
+Planned cases from [P2-BRIEF.md §5](handoff/P2-BRIEF.md). Fill in Actual/Result as you run them; add rows for any extra tests.
 
 | ID | Requirement | Input | Expected output | Actual | Result |
 |---|---|---|---|---|---|
-| TC-U20 | FR-01 | RegisterAsync with valid visitor | Success; CreatedAt = clock time; phone normalised | | |
-| TC-U21 | FR-03 | RegisterAsync with existing phone (different formatting) | Failure "already registered" | | |
-| TC-U22 | FR-06 | UpdateAsync changing phone to another visitor's phone | Failure | | |
-| TC-U23 | FR-09 | HostService.CreateAsync with valid host | Success, IsActive = true | | |
-| TC-U24 | FR-10 | SetActiveAsync(id, false) | Host inactive; still in GetAllAsync | | |
+| TC-U20 | FR-01 | Register valid visitor (FakeClock) | Success; CreatedAt = clock; phone normalised; e-mail lower-cased | | |
+| TC-U21 | FR-03 | Register phone that exists in another format | Failure "A visitor with this phone number is already registered." | | |
+| TC-U22 | FR-06 | Update visitor to another visitor's phone | Failure "Another visitor already uses this phone number." | | |
+| TC-U23 | FR-06 | Update own record keeping the same phone | Success | | |
+| TC-U24 | FR-06 | Update unknown id | Failure "Visitor not found." | | |
+| TC-U25 | FR-09 | Create host | Success; IsActive true | | |
+| TC-U26 | FR-10 | Deactivate host, then list active | Absent from active list; present in all hosts | | |
+| TC-U27 | FR-10 | SetActive on unknown id | Failure "Host not found." | | |
+| TC-U28 | FR-10 | Edit an inactive host | Stays inactive | | |
 
 ### 2.4 Unit and integration tests: Increment 2 (Person 3, TO DO)
 
+Planned cases from [P3-BRIEF.md §5](handoff/P3-BRIEF.md).
+
 | ID | Requirement | Input | Expected output | Actual | Result |
 |---|---|---|---|---|---|
-| TC-U40 | FR-11 | CheckInAsync valid visitor/host at FakeClock 09:00 | Success; CheckInTime = 09:00 | | |
-| TC-U41 | FR-13 | CheckInAsync twice for same visitor | Second call fails "already checked in" | | |
-| TC-U42 | FR-12 | CheckInAsync to inactive host | Failure | | |
-| TC-U43 | FR-14 | CheckOutAsync at 10:15 | Success; CheckOutTime = 10:15 | | |
-| TC-U44 | FR-14 | CheckOutAsync on closed visit | Failure "already checked out" | | |
-| TC-U45 | FR-16 | Stats with 2 open, 1 closed today | OnSiteNow 2, CheckInsToday 3, CheckedOutToday 1 | | |
-| TC-I40 | FR-11–14 | Full check-in → check-out through services + SQLite | Visit stored with both times; not on site | | |
+| TC-U40 | FR-11 | Check in valid visitor/host at FakeClock 09:00 | Success; CheckInTime = 09:00; Visitor and Host set | | |
+| TC-U41 | FR-13 | Check in same visitor twice | Second fails "{name} is already checked in. …" | | |
+| TC-U42 | FR-12 | Check in to inactive host | Failure "{host} is no longer receiving visitors. …" | | |
+| TC-U43 | FR-11 | Unknown visitor / unknown host | "Visitor not found." / "Host not found." | | |
+| TC-U44 | FR-14 | Advance clock 75 min, check out | CheckOutTime = 10:15; duration 1h 15m | | |
+| TC-U45 | FR-14 | Check out twice | Second fails "This visit was already checked out." | | |
+| TC-U46 | FR-13 | Check out, then check in again | New visit allowed | | |
+| TC-U47 | FR-16 | 2 open + 1 closed today, 1 yesterday | OnSiteNow 2, CheckInsToday 3, CheckedOutToday 1 | | |
+| TC-U48 | FR-11 | Notes "   " | Stored as null | | |
+| TC-I40 | FR-11–FR-14, FR-17 | Full check-in → active list → check-out → history (service + SQLite) | Both times stored; not on site; appears in history | | |
 
 ### 2.5 System tests (run the app; all members)
 

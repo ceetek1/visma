@@ -58,9 +58,9 @@ VISMA follows the **Incremental** process model. Each increment is a working, de
 | 1: Registration and hosts | Person 2 | Register/search/edit visitors, returning-visitor lookup, host directory | To do |
 | 2: Visits and dashboard | Person 3 | Check-in, check-out, live dashboard, visit history | To do |
 
-Fill in names and matriculation numbers in [docs/01-project-plan.md](docs/01-project-plan.md#team-and-roles).
+Fill in names and matriculation numbers in [docs/01-project-plan.md](docs/01-project-plan.md#6-team-and-roles).
 
-**New to the codebase? Start with [docs/handoff/HANDOFF-P1.md](docs/handoff/HANDOFF-P1.md).**
+**New to the codebase? Start with [docs/handoff/HANDOFF-P1.md](docs/handoff/HANDOFF-P1.md), then your own brief ([Person 2](docs/handoff/P2-BRIEF.md) · [Person 3](docs/handoff/P3-BRIEF.md)).**
 
 ## Documentation
 
@@ -70,5 +70,9 @@ Fill in names and matriculation numbers in [docs/01-project-plan.md](docs/01-pro
 | [02 Requirements (SRS)](docs/02-srs.md) | Functional and non-functional requirements, scenarios |
 | [03 Design](docs/03-design.md) | Use case, class, ER, architecture, sequence and activity diagrams |
 | [04 Test plan](docs/04-test-plan.md) | Test strategy and test-case log |
-| [Handoff notes](docs/handoff/HANDOFF-P1.md) | What exists, what to build next, how |
+| [05 Report checklist](docs/05-report-checklist.md) | Every report component, where its content lives, who owns it |
+| [Handoff: Person 1](docs/handoff/HANDOFF-P1.md) | What the foundation provides; shared rules, patterns and UI kit |
+| [Brief: Person 2](docs/handoff/P2-BRIEF.md) | Registration and hosts: rules, screens, tests, docs to deliver |
+| [Brief: Person 3](docs/handoff/P3-BRIEF.md) | Visits and dashboard + QA lead duties |
+| [Handoff templates](docs/handoff/) | `HANDOFF-P2.md`, `HANDOFF-P3.md`, filled in when each increment is done |
 | [Contributing](CONTRIBUTING.md) | Branches, commits, pull requests |
