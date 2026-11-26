@@ -4,7 +4,7 @@ using Visma.Core.Entities;
 namespace Visma.Core.Services;
 
 /// <summary>
-/// BUSINESS LOGIC for visitor registration.  >>> OWNER: PERSON 2 (Increment 1) <<<
+/// BUSINESS LOGIC for visitor registration.  [OWNER: PERSON 2 (Increment 1)]
 /// Person 1 defined this contract; Person 2 implements it as
 /// <c>Visma.Core/Services/VisitorService.cs</c> using <see cref="Interfaces.IVisitorRepository"/>
 /// and registers it in <c>Visma.Web/Program.cs</c>.

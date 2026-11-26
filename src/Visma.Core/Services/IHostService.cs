@@ -4,7 +4,7 @@ using Visma.Core.Entities;
 namespace Visma.Core.Services;
 
 /// <summary>
-/// BUSINESS LOGIC for the host (staff) directory.  >>> OWNER: PERSON 2 (Increment 1) <<<
+/// BUSINESS LOGIC for the host (staff) directory.  [OWNER: PERSON 2 (Increment 1)]
 /// Person 1 defined this contract; Person 2 implements it as
 /// <c>Visma.Core/Services/HostService.cs</c> using <see cref="Interfaces.IHostRepository"/>.
 /// </summary>
