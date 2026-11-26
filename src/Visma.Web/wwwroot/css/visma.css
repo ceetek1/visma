@@ -276,7 +276,6 @@ h1, h2, h3, .display-font {
     color: var(--v-sidebar-text);
     text-decoration: none;
     font-weight: 700;
-    border-left: 3px solid transparent;
 }
 
 .sidebar-link .bi {
@@ -290,8 +289,12 @@ h1, h2, h3, .display-font {
 
 .sidebar-link.active {
     color: #fff;
-    background: rgba(255, 255, 255, .09);
-    border-left-color: var(--v-lanyard);
+    background: rgba(255, 255, 255, .1);
+}
+
+/* Current page: the icon takes the lanyard yellow (no side bar). */
+.sidebar-link.active .bi {
+    color: var(--v-lanyard);
 }
 
 .sidebar-soon {
@@ -541,15 +544,9 @@ h1, h2, h3, .display-font {
     opacity: .9;
 }
 
-.pass-open .pass-strip::after {
+.pass-open .pass-strip {
     /* High-vis lanyard band along the bottom of the strip = currently on site. */
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 4px;
-    background: var(--v-lanyard);
+    box-shadow: inset 0 -4px 0 var(--v-lanyard);
 }
 
 .pass-body {
