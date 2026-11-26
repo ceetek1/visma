@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Visma.Core/Visma.Core.csproj" />
+    <Project Path="src/Visma.Data/Visma.Data.csproj" />
+    <Project Path="src/Visma.Web/Visma.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Visma.Tests/Visma.Tests.csproj" />
+  </Folder>
+</Solution>
