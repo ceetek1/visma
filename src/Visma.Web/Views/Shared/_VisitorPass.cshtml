@@ -1,0 +1,43 @@
+@model Visit
+@inject TimeProvider Clock
+@*
+    A visit drawn as a lanyard visitor pass. Used for people currently on site.
+    Person 3: reuse on the dashboard and on the check-in confirmation page:
+        <partial name="_VisitorPass" model="visit" />
+    The Visit must have Visitor and Host loaded (repository methods already do this).
+*@
+@{
+    var now = Clock.GetUtcNow().UtcDateTime;
+    var open = Model.Status == VisitStatus.CheckedIn;
+}
+<article class="pass @(open ? "pass-open" : "pass-closed")" aria-label="Visitor pass for @Model.Visitor?.FullName">
+    <div class="pass-strip">
+        <span class="pass-slot" aria-hidden="true"></span>
+        <span class="pass-kind">Visitor</span>
+        <span class="pass-no">No. @Model.Id.ToString("D4")</span>
+    </div>
+    <div class="pass-body">
+        <p class="pass-name">@Model.Visitor?.FullName</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Visitor?.Company))
+        {
+            <p class="pass-company">@Model.Visitor.Company</p>
+        }
+        <dl class="pass-facts">
+            <div>
+                <dt>Seeing</dt>
+                <dd>@Model.Host?.FullName <span class="pass-dept">@Model.Host?.Department</span></dd>
+            </div>
+            <div>
+                <dt>Purpose</dt>
+                <dd>@Model.Purpose.GetDisplayName()@(string.IsNullOrWhiteSpace(Model.Notes) ? "" : $": {Model.Notes}")</dd>
+            </div>
+            <div>
+                <dt>@(open ? "Arrived" : "Visit")</dt>
+                <dd>
+                    @Model.CheckInTime.ToDisplayTime()
+                    <span class="pass-duration">(@Model.Duration(now).ToFriendlyDuration()@(open ? " so far" : ""))</span>
+                </dd>
+            </div>
+        </dl>
+    </div>
+</article>

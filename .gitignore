@@ -1,2 +1,19 @@
 .DS_Store
 ._*
+
+# .NET build output
+bin/
+obj/
+*.user
+.vs/
+.idea/
+.vscode/
+TestResults/
+
+# Local SQLite database (recreated automatically on first run)
+*.db
+*.db-shm
+*.db-wal
+
+# Local Claude Code tooling / worktrees
+.claude/

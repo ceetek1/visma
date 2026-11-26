@@ -1,0 +1,12 @@
+@model VisitStatus
+@*
+    Usage: <partial name="_StatusBadge" model="visit.Status" />
+*@
+@if (Model == VisitStatus.CheckedIn)
+{
+    <span class="status status-in"><span class="status-dot" aria-hidden="true"></span>On site</span>
+}
+else
+{
+    <span class="status status-out"><span class="status-dot" aria-hidden="true"></span>Checked out</span>
+}

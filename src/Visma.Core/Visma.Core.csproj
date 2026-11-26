@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- DOMAIN / BUSINESS LAYER: entities, enums, repository + service contracts.
+       Deliberately has NO package references: no EF Core, no ASP.NET.
+       Everything else depends on this project; it depends on nothing. -->
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+</Project>

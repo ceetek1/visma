@@ -1,0 +1,14 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+<section class="panel coming-soon">
+    <i class="bi bi-exclamation-triangle coming-icon" aria-hidden="true"></i>
+    <h2 class="coming-title">VISMA hit an unexpected error</h2>
+    <p class="coming-text">Your last action may not have been saved. Go back to the dashboard and try again.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="coming-owner">Reference for the developers: <code>@Model.RequestId</code></p>
+    }
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to dashboard</a>
+</section>

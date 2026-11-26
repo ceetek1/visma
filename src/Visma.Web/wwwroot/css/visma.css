@@ -1,0 +1,792 @@
+/* =============================================================================
+   VISMA theme, layered on Bootstrap 5.3.
+   Idea: the front desk's paper logbook and lanyard visitor passes.
+   - Colours live in the tokens below; change them here, not in components.
+   - Light/dark: Bootstrap's [data-bs-theme] attribute (set in _Layout.cshtml).
+   - Teammates: prefer Bootstrap utilities + these tokens; add new component
+     styles at the bottom under a commented heading with your name/feature.
+   ============================================================================= */
+
+/* ---------- 1. Tokens ---------- */
+:root,
+[data-bs-theme="light"] {
+    --v-ink: #1D2B36;          /* logbook-pen slate: text, sidebar            */
+    --v-paper: #F4F6F5;        /* page background                             */
+    --v-surface: #FFFFFF;      /* panels                                      */
+    --v-pass: #1F7A5C;         /* security-pass green: primary actions        */
+    --v-pass-strong: #17604A;
+    --v-pass-tint: #E3F1EB;
+    --v-lanyard: #F2B632;      /* high-vis yellow: "on site" only             */
+    --v-lanyard-tint: #FDF3D9;
+    --v-signal: #B83A26;       /* errors / destructive                        */
+    --v-signal-tint: #F8E6E2;
+    --v-rule: #D7DEDB;         /* borders, logbook rules                      */
+    --v-muted: #5B6B73;        /* secondary text (AA on paper and surface)    */
+    --v-sidebar-bg: #1D2B36;
+    --v-sidebar-text: #C9D4D0;
+
+    --v-font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --v-font-display: "Bricolage Grotesque", "Atkinson Hyperlegible", system-ui, sans-serif;
+
+    --v-radius-control: 8px;   /* buttons, inputs  */
+    --v-radius-panel: 12px;    /* panels           */
+    --v-radius-pass: 16px;     /* visitor passes   */
+
+    /* Map tokens onto Bootstrap so its components follow the theme. */
+    --bs-body-font-family: var(--v-font-body);
+    --bs-body-bg: var(--v-paper);
+    --bs-body-color: var(--v-ink);
+    --bs-border-color: var(--v-rule);
+    --bs-secondary-color: var(--v-muted);
+    --bs-primary: var(--v-pass);
+    --bs-primary-rgb: 31, 122, 92;
+    --bs-link-color: var(--v-pass);
+    --bs-link-color-rgb: 31, 122, 92;
+    --bs-link-hover-color: var(--v-pass-strong);
+    --bs-link-hover-color-rgb: 23, 96, 74;
+    --bs-focus-ring-color: rgba(31, 122, 92, .35);
+    --bs-danger: var(--v-signal);
+    --bs-danger-rgb: 184, 58, 38;
+}
+
+[data-bs-theme="dark"] {
+    --v-ink: #E4EBE8;
+    --v-paper: #11191E;
+    --v-surface: #182329;
+    --v-pass: #3DB088;
+    --v-pass-strong: #5CC79F;
+    --v-pass-tint: #173A2F;
+    --v-lanyard: #F2B632;
+    --v-lanyard-tint: #3A3018;
+    --v-signal: #EF7D69;
+    --v-signal-tint: #3D201B;
+    --v-rule: #2B3A42;
+    --v-muted: #98A8AF;
+    --v-sidebar-bg: #0D1418;
+    --v-sidebar-text: #A9B8B3;
+
+    --bs-body-bg: var(--v-paper);
+    --bs-body-color: var(--v-ink);
+    --bs-border-color: var(--v-rule);
+    --bs-secondary-color: var(--v-muted);
+    --bs-primary-rgb: 61, 176, 136;
+    --bs-link-color: var(--v-pass);
+    --bs-link-color-rgb: 61, 176, 136;
+    --bs-link-hover-color: var(--v-pass-strong);
+    --bs-link-hover-color-rgb: 92, 199, 159;
+    --bs-focus-ring-color: rgba(61, 176, 136, .4);
+    --bs-danger-rgb: 239, 125, 105;
+}
+
+/* ---------- 2. Base ---------- */
+body {
+    background: var(--v-paper);
+    color: var(--v-ink);
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+h1, h2, h3, .display-font {
+    font-family: var(--v-font-display);
+    letter-spacing: -0.01em;
+}
+
+:focus-visible {
+    outline: 3px solid var(--v-pass);
+    outline-offset: 2px;
+}
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 2000;
+    background: var(--v-surface);
+    padding: .5rem 1rem;
+    border-radius: var(--v-radius-control);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* ---------- 3. Buttons & forms ---------- */
+.btn {
+    border-radius: var(--v-radius-control);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--v-pass);
+    --bs-btn-border-color: var(--v-pass);
+    --bs-btn-hover-bg: var(--v-pass-strong);
+    --bs-btn-hover-border-color: var(--v-pass-strong);
+    --bs-btn-active-bg: var(--v-pass-strong);
+    --bs-btn-active-border-color: var(--v-pass-strong);
+    --bs-btn-disabled-bg: var(--v-pass);
+    --bs-btn-disabled-border-color: var(--v-pass);
+    --bs-btn-color: #fff;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-color: #fff;
+}
+
+[data-bs-theme="dark"] .btn-primary {
+    --bs-btn-color: #08140F;
+    --bs-btn-hover-color: #08140F;
+    --bs-btn-active-color: #08140F;
+}
+
+.btn-danger {
+    --bs-btn-bg: var(--v-signal);
+    --bs-btn-border-color: var(--v-signal);
+}
+
+.btn-icon {
+    border: 1px solid var(--v-rule);
+    background: var(--v-surface);
+    color: var(--v-ink);
+    width: 2.5rem;
+    height: 2.5rem;
+    justify-content: center;
+    font-size: 1.35rem;
+    padding: 0;
+}
+
+.form-control,
+.form-select {
+    border-radius: var(--v-radius-control);
+    background-color: var(--v-surface);
+    border-color: var(--v-rule);
+    padding: .6rem .8rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--v-pass);
+    box-shadow: 0 0 0 .2rem var(--bs-focus-ring-color);
+}
+
+.form-label {
+    font-weight: 700;
+    margin-bottom: .3rem;
+}
+
+.field-validation-error,
+.validation-summary-errors {
+    color: var(--v-signal);
+    font-size: .9rem;
+}
+
+.input-validation-error {
+    border-color: var(--v-signal) !important;
+}
+
+/* ---------- 4. App shell ---------- */
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    --bs-offcanvas-width: 260px;
+    --bs-offcanvas-bg: var(--v-sidebar-bg);
+    background: var(--v-sidebar-bg);
+    color: var(--v-sidebar-text);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 992px) {
+    .sidebar.offcanvas-lg {
+        /* Bootstrap forces offcanvas-lg to `transparent !important` on desktop;
+           the sidebar must keep its ink background, so override with equal force. */
+        background-color: var(--v-sidebar-bg) !important;
+    }
+
+    .sidebar {
+        width: 248px;
+        flex: 0 0 248px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+    }
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 1.25rem 1.1rem;
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: #fff;
+    text-decoration: none;
+}
+
+.brand-mark {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: var(--v-lanyard);
+    color: #1D2B36;
+    font-size: 1.25rem;
+}
+
+.brand-name {
+    display: block;
+    font-family: var(--v-font-display);
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: .02em;
+    line-height: 1.1;
+}
+
+.brand-sub {
+    display: block;
+    font-size: .8rem;
+    color: var(--v-sidebar-text);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: .5rem .75rem;
+    flex: 1;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .65rem .8rem;
+    border-radius: var(--v-radius-control);
+    color: var(--v-sidebar-text);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.sidebar-link .bi {
+    font-size: 1.15rem;
+}
+
+.sidebar-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .06);
+}
+
+.sidebar-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, .1);
+}
+
+/* Current page: the icon takes the lanyard yellow (no side bar). */
+.sidebar-link.active .bi {
+    color: var(--v-lanyard);
+}
+
+.sidebar-soon {
+    margin-left: auto;
+    font-size: .72rem;
+    font-weight: 400;
+    padding: .05rem .45rem;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 999px;
+    color: var(--v-sidebar-text);
+}
+
+.sidebar-foot {
+    padding: 1rem .75rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.theme-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .55rem .8rem;
+    background: transparent;
+    border: 0;
+    border-radius: var(--v-radius-control);
+    color: var(--v-sidebar-text);
+    font: inherit;
+}
+
+.theme-toggle:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, .06);
+}
+
+.main-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1010;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .85rem clamp(1rem, 3vw, 2.25rem);
+    background: color-mix(in srgb, var(--v-paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--v-rule);
+}
+
+.topbar-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.topbar-clock {
+    color: var(--v-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.page {
+    padding: clamp(1rem, 3vw, 2.25rem);
+    max-width: 1280px;
+    width: 100%;
+}
+
+/* ---------- 5. Panels, tables, flashes ---------- */
+.panel {
+    background: var(--v-surface);
+    border: 1px solid var(--v-rule);
+    border-radius: var(--v-radius-panel);
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+.panel + .panel {
+    margin-top: 1.5rem;
+}
+
+.panel-head {
+    margin-bottom: 1.1rem;
+}
+
+.panel-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 .25rem;
+}
+
+.panel-sub {
+    color: var(--v-muted);
+    margin: 0;
+    max-width: 65ch;
+}
+
+/* Tables look like a ruled logbook: horizontal rules only, generous rows. */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--v-ink);
+    --bs-table-border-color: var(--v-rule);
+    --bs-table-hover-bg: var(--v-pass-tint);
+    --bs-table-hover-color: var(--v-ink);
+    margin-bottom: 0;
+}
+
+.table > thead th {
+    font-size: .85rem;
+    color: var(--v-muted);
+    font-weight: 700;
+    border-bottom-width: 2px;
+    white-space: nowrap;
+}
+
+.table > tbody td {
+    padding-top: .8rem;
+    padding-bottom: .8rem;
+    vertical-align: middle;
+}
+
+.flash {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    border-radius: var(--v-radius-control);
+    border: 1px solid;
+    margin-bottom: 1.25rem;
+}
+
+.flash-success {
+    background: var(--v-pass-tint);
+    border-color: var(--v-pass);
+    color: var(--v-ink);
+}
+
+.flash-success .bi {
+    color: var(--v-pass);
+}
+
+.flash-error {
+    background: var(--v-signal-tint);
+    border-color: var(--v-signal);
+    color: var(--v-ink);
+}
+
+.flash-error .bi {
+    color: var(--v-signal);
+}
+
+/* ---------- 6. Status badge ---------- */
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    font-size: .85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status-in {
+    background: var(--v-lanyard-tint);
+    color: var(--v-ink);
+}
+
+.status-in .status-dot {
+    background: var(--v-lanyard);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--v-lanyard) 35%, transparent);
+}
+
+.status-out {
+    background: transparent;
+    border: 1px solid var(--v-rule);
+    color: var(--v-muted);
+}
+
+/* ---------- 7. Visitor pass (the signature element) ---------- */
+.pass {
+    background: var(--v-surface);
+    border: 1px solid var(--v-rule);
+    border-radius: var(--v-radius-pass);
+    overflow: hidden;
+    max-width: 380px;
+    width: 100%;
+}
+
+.pass-strip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.35rem 1.1rem .7rem;
+    background: var(--v-pass);
+    color: #fff;
+}
+
+.pass-closed .pass-strip {
+    background: var(--v-muted);
+}
+
+/* Dark mode greens are lighter, so dark text keeps the strip readable (WCAG AA). */
+[data-bs-theme="dark"] .pass-strip,
+[data-bs-theme="dark"] .is-ready .increment-marker {
+    color: #08140F;
+}
+
+/* The punched slot a lanyard clip goes through. */
+.pass-slot {
+    position: absolute;
+    top: .5rem;
+    left: 50%;
+    width: 2.6rem;
+    height: .5rem;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--v-paper);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, .25);
+}
+
+.pass-kind {
+    font-family: var(--v-font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: .01em;
+}
+
+.pass-no {
+    font-variant-numeric: tabular-nums;
+    font-size: .9rem;
+    opacity: .9;
+}
+
+.pass-open .pass-strip {
+    /* High-vis lanyard band along the bottom of the strip = currently on site. */
+    box-shadow: inset 0 -4px 0 var(--v-lanyard);
+}
+
+.pass-body {
+    padding: 1rem 1.1rem 1.15rem;
+}
+
+.pass-name {
+    font-family: var(--v-font-display);
+    font-weight: 700;
+    font-size: 1.55rem;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.pass-company {
+    color: var(--v-muted);
+    margin: .15rem 0 0;
+}
+
+.pass-facts {
+    margin: .9rem 0 0;
+    display: grid;
+    gap: .55rem;
+}
+
+.pass-facts > div {
+    display: grid;
+    grid-template-columns: 5.2rem 1fr;
+    gap: .5rem;
+    padding-top: .55rem;
+    border-top: 1px dashed var(--v-rule);
+}
+
+.pass-facts dt {
+    color: var(--v-muted);
+    font-weight: 400;
+}
+
+.pass-facts dd {
+    margin: 0;
+    font-weight: 700;
+}
+
+.pass-dept,
+.pass-duration {
+    display: block;
+    font-weight: 400;
+    color: var(--v-muted);
+}
+
+/* ---------- 8. Home (Person 1 landing; Person 3 evolves into the dashboard) ---------- */
+.welcome {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+    margin-bottom: 2.25rem;
+}
+
+.welcome-date {
+    color: var(--v-muted);
+    margin: 0 0 .35rem;
+}
+
+.welcome-greeting {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0 0 .9rem;
+}
+
+.welcome-lede {
+    font-size: 1.25rem;
+    max-width: 34ch;
+    margin: 0 0 1.5rem;
+}
+
+.facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 2rem;
+    color: var(--v-muted);
+}
+
+.fact-num {
+    font-family: var(--v-font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--v-ink);
+    margin-right: .3rem;
+}
+
+.welcome-passes {
+    display: grid;
+    gap: 1rem;
+    justify-items: end;
+}
+
+.more-on-site {
+    color: var(--v-muted);
+    margin: 0;
+}
+
+.increment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.increment {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: .9rem 0;
+    border-top: 1px solid var(--v-rule);
+}
+
+.increment-marker {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--v-rule);
+    color: var(--v-muted);
+}
+
+.is-ready .increment-marker {
+    background: var(--v-pass);
+    border-color: var(--v-pass);
+    color: #fff;
+}
+
+.increment-name {
+    font-weight: 700;
+    margin: 0;
+}
+
+.increment-owner {
+    font-weight: 400;
+    color: var(--v-muted);
+    margin-left: .35rem;
+}
+
+.increment-summary {
+    margin: 0;
+    color: var(--v-muted);
+}
+
+.increment-state {
+    font-size: .9rem;
+    color: var(--v-muted);
+}
+
+.is-ready .increment-state {
+    color: var(--v-pass);
+    font-weight: 700;
+}
+
+/* ---------- 9. Empty state & placeholder pages ---------- */
+.empty-state {
+    text-align: center;
+    padding: 2rem 1.25rem;
+    border: 2px dashed var(--v-rule);
+    border-radius: var(--v-radius-pass);
+    width: 100%;
+}
+
+.empty-icon,
+.coming-icon {
+    font-size: 2.25rem;
+    color: var(--v-muted);
+}
+
+.empty-title {
+    font-size: 1.2rem;
+    margin: .5rem 0 .25rem;
+}
+
+.empty-text {
+    color: var(--v-muted);
+    margin: 0 auto 1rem;
+    max-width: 40ch;
+}
+
+.coming-soon {
+    max-width: 640px;
+}
+
+.coming-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: .75rem 0 .5rem;
+}
+
+.coming-text {
+    font-size: 1.1rem;
+    max-width: 55ch;
+}
+
+.coming-owner {
+    color: var(--v-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* ---------- 10. Small screens ---------- */
+@media (max-width: 991.98px) {
+    .welcome {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-passes {
+        justify-items: stretch;
+    }
+
+    .pass {
+        max-width: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .increment {
+        grid-template-columns: 2.25rem 1fr;
+    }
+
+    .increment-state {
+        grid-column: 2;
+    }
+}
+
+/* =============================================================================
+   Feature styles: Person 2 (Registration & Hosts) add below this line
+   ============================================================================= */
+
+
+/* =============================================================================
+   Feature styles: Person 3 (Visits & Dashboard) add below this line
+   ============================================================================= */

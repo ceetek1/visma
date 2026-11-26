@@ -1,0 +1,11 @@
+@model ComingSoonViewModel
+@{
+    ViewData["Title"] = Model.Feature;
+}
+<section class="panel coming-soon">
+    <i class="bi bi-cone-striped coming-icon" aria-hidden="true"></i>
+    <h2 class="coming-title">@Model.Feature isn't built yet</h2>
+    <p class="coming-text">@Model.Description</p>
+    <p class="coming-owner">It's part of <strong>@Model.Increment</strong>, owned by <strong>@Model.Owner</strong>. This link starts working as soon as that code is merged.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Back to dashboard</a>
+</section>

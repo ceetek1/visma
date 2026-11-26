@@ -1,0 +1,15 @@
+@model EmptyStateModel
+@*
+    Usage:
+    <partial name="_EmptyState" model='new EmptyStateModel("bi-people", "No visitors yet",
+             "Register the first visitor to see them here.", "Register a visitor", Url.Action("Create"))' />
+*@
+<div class="empty-state">
+    <i class="bi @Model.Icon empty-icon" aria-hidden="true"></i>
+    <h2 class="empty-title">@Model.Title</h2>
+    <p class="empty-text">@Model.Message</p>
+    @if (Model.ActionText is not null && Model.ActionUrl is not null)
+    {
+        <a class="btn btn-primary" href="@Model.ActionUrl">@Model.ActionText</a>
+    }
+</div>
