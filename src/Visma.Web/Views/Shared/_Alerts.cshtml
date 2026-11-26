@@ -1,0 +1,26 @@
+@*
+    Flash messages. In a controller, set one before redirecting:
+        TempData["Success"] = "Checked in Ada Okafor.";
+        TempData["Error"]   = "Ada Okafor is already checked in.";
+    They show once, on the next page.
+*@
+@{
+    var success = TempData["Success"] as string;
+    var error = TempData["Error"] as string;
+}
+@if (!string.IsNullOrEmpty(success))
+{
+    <div class="flash flash-success alert alert-dismissible fade show" role="status">
+        <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+        <span>@success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss"></button>
+    </div>
+}
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="flash flash-error alert alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+        <span>@error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss"></button>
+    </div>
+}

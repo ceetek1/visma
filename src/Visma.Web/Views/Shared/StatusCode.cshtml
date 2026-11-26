@@ -1,0 +1,10 @@
+@{
+    var code = ViewData["Code"] as int? ?? 0;
+    ViewData["Title"] = code == 404 ? "Page not found" : "Something went wrong";
+}
+<section class="panel coming-soon">
+    <i class="bi bi-signpost-split coming-icon" aria-hidden="true"></i>
+    <h2 class="coming-title">@(code == 404 ? "There's no page at this address" : $"The request failed (error {code})")</h2>
+    <p class="coming-text">Check the address, or go back to the dashboard and use the menu.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to dashboard</a>
+</section>

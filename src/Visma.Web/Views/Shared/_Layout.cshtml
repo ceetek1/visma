@@ -1,47 +1,128 @@
-﻿<!DOCTYPE html>
+﻿@inject NavigationHelper Nav
+@{
+    // Sidebar entries. Each lights up automatically once its controller exists
+    // (see Infrastructure/NavigationHelper.cs); until then it opens "Coming soon".
+    var links = new[]
+    {
+        new NavLinkModel("Home",     "Index",   "Dashboard",  "bi-grid-1x2"),
+        new NavLinkModel("Visits",   "CheckIn", "Check in",   "bi-box-arrow-in-right"),
+        new NavLinkModel("Visitors", "Index",   "Visitors",   "bi-people"),
+        new NavLinkModel("Hosts",    "Index",   "Hosts",      "bi-person-vcard"),
+        new NavLinkModel("Visits",   "History", "Visit log",  "bi-journal-text"),
+    };
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var checkInUrl = Nav.Exists("Visits", "CheckIn")
+        ? Url.Action("CheckIn", "Visits")
+        : Url.Action("ComingSoon", "Home", new { feature = "Visits" });
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Visma.Web</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] | VISMA</title>
+    <meta name="description" content="VISMA visitor management: register visitors, record why they came, who they are seeing, and when they arrive and leave." />
+    <script>
+        // Apply the saved (or system) colour theme before the page paints, to avoid a flash.
+        (function () {
+            var saved = null;
+            try { saved = localStorage.getItem('visma-theme'); } catch (e) { }
+            var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-bs-theme', dark ? 'dark' : 'light');
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Visma.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/visma.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Visma.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+    <a class="visually-hidden-focusable skip-link" href="#main">Skip to content</a>
+
+    <div class="app-shell">
+        @* ---------- Sidebar (offcanvas below 992px) ---------- *@
+        <aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar" aria-label="Main navigation">
+            <div class="sidebar-brand">
+                <a asp-controller="Home" asp-action="Index" class="brand-link">
+                    <span class="brand-mark" aria-hidden="true"><i class="bi bi-person-badge"></i></span>
+                    <span>
+                        <span class="brand-name">VISMA</span>
+                        <span class="brand-sub">Visitor management</span>
+                    </span>
+                </a>
+                <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas"
+                        data-bs-target="#sidebar" aria-label="Close menu"></button>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+            <nav class="sidebar-nav">
+                @foreach (var link in links)
+                {
+                    var ready = Nav.Exists(link.Controller, link.Action);
+                    var href = ready
+                        ? Url.Action(link.Action, link.Controller)
+                        : Url.Action("ComingSoon", "Home", new { feature = link.Controller });
+                    bool isActive;
+                    if (currentAction == "ComingSoon")
+                    {
+                        // Placeholder page: highlight the feature being previewed (first link only).
+                        isActive = string.Equals(ViewData["Feature"] as string, link.Controller, StringComparison.OrdinalIgnoreCase)
+                                   && link.Action != "History";
+                    }
+                    else
+                    {
+                        // Real page: same controller AND (same action, or any page of a feature whose link is its Index).
+                        var sameController = string.Equals(currentController, link.Controller, StringComparison.OrdinalIgnoreCase);
+                        var sameAction = string.Equals(currentAction, link.Action, StringComparison.OrdinalIgnoreCase);
+                        isActive = sameController && (sameAction || (link.Action == "Index" && link.Controller != "Home"));
+                    }
+                    <a href="@href" class="sidebar-link @(isActive ? "active" : "")" aria-current="@(isActive ? "page" : null)">
+                        <i class="bi @link.Icon" aria-hidden="true"></i>
+                        <span>@link.Label</span>
+                        @if (!ready)
+                        {
+                            <span class="sidebar-soon" title="Not built yet">soon</span>
+                        }
+                    </a>
+                }
+            </nav>
+
+            <div class="sidebar-foot">
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch colour theme">
+                    <i class="bi bi-moon-stars" aria-hidden="true"></i>
+                    <span>Dark mode</span>
+                </button>
+            </div>
+        </aside>
+
+        @* ---------- Main column ---------- *@
+        <div class="main-col">
+            <header class="topbar">
+                <button class="btn btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                        aria-controls="sidebar" aria-label="Open menu">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+                <h1 class="topbar-title">@ViewData["Title"]</h1>
+                <time class="topbar-clock d-none d-md-inline" id="liveClock" aria-live="off"></time>
+                @if (!(currentController == "Visits" && currentAction == "CheckIn"))
+                {
+                    <a href="@checkInUrl" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                        <span class="d-none d-sm-inline">Check in a visitor</span>
+                        <span class="d-sm-none">Check in</span>
+                    </a>
+                }
+            </header>
+
+            <main id="main" class="page" role="main">
+                <partial name="_Alerts" />
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Visma.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

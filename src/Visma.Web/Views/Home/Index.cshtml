@@ -1,8 +1,68 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model HomeIndexViewModel
+@inject NavigationHelper Nav
+@{
+    ViewData["Title"] = "Dashboard";
+    var onSite = Model.OnSite.Count;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="welcome">
+    <div class="welcome-text">
+        <p class="welcome-date">@Model.LocalNow.ToString("dddd d MMMM yyyy")</p>
+        <h2 class="welcome-greeting">@Model.Greeting.</h2>
+        <p class="welcome-lede">
+            @if (onSite == 0)
+            {
+                <text>Nobody is signed in at the front desk right now.</text>
+            }
+            else
+            {
+                <text><strong>@onSite @(onSite == 1 ? "person is" : "people are")</strong> on site right now.</text>
+            }
+        </p>
+        <ul class="facts">
+            <li><span class="fact-num">@Model.ActiveHosts</span> staff can receive visitors</li>
+            <li><span class="fact-num">@Model.RegisteredVisitors</span> visitors registered</li>
+        </ul>
+    </div>
+
+    <div class="welcome-passes" aria-label="People on site">
+        @if (onSite == 0)
+        {
+            <partial name="_EmptyState" model='new EmptyStateModel("bi-door-open", "The building is empty",
+                     "When someone checks in, their visitor pass appears here.")' />
+        }
+        else
+        {
+            foreach (var visit in Model.OnSite.Take(3))
+            {
+                <partial name="_VisitorPass" model="visit" />
+            }
+            if (onSite > 3)
+            {
+                <p class="more-on-site">and @(onSite - 3) more on site</p>
+            }
+        }
+    </div>
+</section>
+
+<section class="panel increments" aria-labelledby="incrementsHeading">
+    <header class="panel-head">
+        <h2 id="incrementsHeading" class="panel-title">Project increments</h2>
+        <p class="panel-sub">VISMA is built in three increments. Each one switches on in the menu when its code is merged.</p>
+    </header>
+    <ol class="increment-list">
+        @foreach (var inc in Model.Increments)
+        {
+            <li class="increment @(inc.IsReady ? "is-ready" : "is-waiting")">
+                <span class="increment-marker" aria-hidden="true">
+                    <i class="bi @(inc.IsReady ? "bi-check-lg" : "bi-hourglass-split")"></i>
+                </span>
+                <div>
+                    <p class="increment-name">@inc.Name <span class="increment-owner">@inc.Owner</span></p>
+                    <p class="increment-summary">@inc.Summary</p>
+                </div>
+                <span class="increment-state">@(inc.IsReady ? "Ready" : "In progress")</span>
+            </li>
+        }
+    </ol>
+</section>
