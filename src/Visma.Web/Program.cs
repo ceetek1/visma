@@ -4,6 +4,7 @@
 //  (Dependency Injection). Controllers ask for interfaces; they never `new` up
 //  repositories or services themselves.
 // =============================================================================
+using Visma.Core.Services; // service interfaces + implementations (Persons 2 & 3)
 using Visma.Data;
 using Visma.Web.Infrastructure;
 
