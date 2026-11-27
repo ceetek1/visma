@@ -1,3 +1,4 @@
+using Visma.Core.Common;
 using Visma.Core.Entities;
 
 namespace Visma.Web.Models;
@@ -6,19 +7,19 @@ namespace Visma.Web.Models;
 // Persons 2 and 3: put your screen models in this folder too (one file per feature is fine,
 // e.g. Models/VisitorViewModels.cs).
 
-/// <summary>Data for the landing page (Person 1). Person 3 replaces this with the dashboard.</summary>
+/// <summary>Data for the dashboard (Person 1 landing page, made live by Person 3).</summary>
 public class HomeIndexViewModel
 {
-    /// <summary>Visits that are still open (people on site right now).</summary>
+    /// <summary>Visits that are still open (people on site right now), most recent first.</summary>
     public IReadOnlyList<Visit> OnSite { get; init; } = [];
 
-    /// <summary>Hosts who can currently receive visitors.</summary>
-    public int ActiveHosts { get; init; }
+    /// <summary>Today's figures from IVisitService.GetDashboardStatsAsync.</summary>
+    public DashboardStats Stats { get; init; } = new(0, 0, 0, 0);
 
-    /// <summary>Visitors registered so far.</summary>
-    public int RegisteredVisitors { get; init; }
-
-    /// <summary>Feature progress shown while increments are being built.</summary>
+    /// <summary>
+    /// Feature progress shown while increments are being built.
+    /// Remove (with the panel in Views/Home/Index.cshtml) once all three increments are merged.
+    /// </summary>
     public IReadOnlyList<IncrementStatus> Increments { get; init; } = [];
 
     /// <summary>"Good morning" / "Good afternoon" / "Good evening".</summary>

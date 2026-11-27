@@ -1,32 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Visma.Core.Interfaces;
+using Visma.Core.Services;
 using Visma.Web.Infrastructure;
 using Visma.Web.Models;
 
 namespace Visma.Web.Controllers;
 
 /// <summary>
-/// Landing page, "coming soon" placeholders and error pages.
-/// Person 3 will turn <see cref="Index"/> into the live dashboard using IVisitService.
+/// The live dashboard (Person 3), "coming soon" placeholders and error pages.
 /// </summary>
 public class HomeController(
-    IVisitRepository visits,
-    IHostRepository hosts,
-    IVisitorRepository visitors,
+    IVisitService visitService,
     NavigationHelper nav,
     TimeProvider clock) : Controller
 {
-    /// <summary>GET / : who is on site plus project increment progress.</summary>
+    /// <summary>GET / : today's figures and everyone on site, each with a Check out button.</summary>
     public async Task<IActionResult> Index()
     {
         var localNow = clock.GetLocalNow();
 
         var model = new HomeIndexViewModel
         {
-            OnSite = await visits.GetActiveVisitsAsync(),
-            ActiveHosts = (await hosts.GetActiveAsync()).Count,
-            RegisteredVisitors = (await visitors.SearchAsync(null)).Count,
+            OnSite = await visitService.GetActiveVisitsAsync(),
+            Stats = await visitService.GetDashboardStatsAsync(),
             LocalNow = localNow,
             Greeting = localNow.Hour switch
             {
