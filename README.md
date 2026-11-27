@@ -56,7 +56,7 @@ VISMA follows the **Incremental** process model. Each increment is a working, de
 |---|---|---|---|
 | 0: Foundation | Person 1 | Solution structure, domain model, database, repositories, layout and theme, test infrastructure, documentation | Done |
 | 1: Registration and hosts | Person 2 | Register/search/edit visitors, returning-visitor lookup, host directory | To do |
-| 2: Visits and dashboard | Person 3 | Check-in, check-out, live dashboard, visit history | To do |
+| 2: Visits and dashboard | Person 3 | Check-in, check-out, live dashboard, visit history | Done ([handoff](docs/handoff/HANDOFF-P3.md)) |
 
 Fill in names and matriculation numbers in [docs/01-project-plan.md](docs/01-project-plan.md#6-team-and-roles).
 

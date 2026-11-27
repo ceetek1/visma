@@ -790,3 +790,364 @@ h1, h2, h3, .display-font {
 /* =============================================================================
    Feature styles: Person 3 (Visits & Dashboard) add below this line
    ============================================================================= */
+
+/* ---------- P3.1 Check-in wizard ---------- */
+/* The three steps read like the stages of signing the paper logbook. */
+.checkin-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.75rem;
+    color: var(--v-muted);
+}
+
+.checkin-step {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+}
+
+.checkin-step-no {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--v-rule);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.checkin-step.is-current {
+    color: var(--v-ink);
+    font-weight: 700;
+}
+
+.checkin-step.is-current .checkin-step-no {
+    border-color: var(--v-pass);
+    color: var(--v-pass);
+}
+
+.checkin-step.is-done .checkin-step-no {
+    background: var(--v-pass);
+    border-color: var(--v-pass);
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .checkin-step.is-done .checkin-step-no {
+    color: #08140F;
+}
+
+.find-panel {
+    max-width: 760px;
+}
+
+.find-row {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: .5rem;
+}
+
+.find-row .form-control {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.find-row .btn {
+    white-space: nowrap;
+}
+
+.pick-table td .status {
+    vertical-align: middle;
+}
+
+.visitor-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 760px;
+}
+
+.visitor-summary-name {
+    font-family: var(--v-font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    margin: 0 0 .3rem;
+}
+
+.visitor-summary-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    color: var(--v-muted);
+    margin: 0;
+}
+
+.visitor-summary-change {
+    white-space: nowrap;
+}
+
+.checkin-form-panel,
+.already-in {
+    max-width: 760px;
+}
+
+.label-optional {
+    font-weight: 400;
+    color: var(--v-muted);
+}
+
+.form-errors ul {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--v-signal);
+    border-radius: var(--v-radius-control);
+    background: var(--v-signal-tint);
+    color: var(--v-ink);
+    font-size: 1rem;
+}
+
+.form-errors.validation-summary-valid {
+    display: none;
+}
+
+.already-in-body {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+}
+
+/* ---------- P3.2 Visitor pass page ---------- */
+.pass-page {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+}
+
+.pass-page .pass {
+    max-width: 420px;
+}
+
+.pass-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+@media (max-width: 575.98px) {
+    .find-row {
+        flex-direction: column;
+    }
+
+    .visitor-summary {
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .pass-page-actions > *,
+    .pass-page-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ---------- P3.3 Dashboard ---------- */
+/* Today's figures sit beside the greeting as plain numbers on a ruled grid, not cards. */
+.dash-welcome {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+    align-items: end;
+}
+
+.dash-facts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    color: var(--v-muted);
+}
+
+.dash-facts li {
+    padding: .85rem 0 .85rem 1rem;
+    border-top: 1px solid var(--v-rule);
+}
+
+.dash-facts li:nth-child(odd) {
+    padding-left: 0;
+}
+
+.dash-facts li:nth-child(even) {
+    border-left: 1px solid var(--v-rule);
+}
+
+.dash-fact-num {
+    display: block;
+    font-family: var(--v-font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1;
+    color: var(--v-ink);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: .3rem;
+}
+
+.on-site-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.on-site {
+    margin-bottom: 2.25rem;
+}
+
+.pass-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.pass-card {
+    display: grid;
+    gap: .6rem;
+}
+
+.pass-card .pass {
+    max-width: none;
+}
+
+.cell-sub {
+    display: block;
+    color: var(--v-muted);
+    font-size: .9rem;
+}
+
+@media (max-width: 991.98px) {
+    .dash-welcome {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+}
+
+.table .btn {
+    white-space: nowrap;
+}
+
+/* ---------- P3.4 Visit log ---------- */
+.history-form {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 11rem) minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.history-filters + .panel {
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .history-form {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .history-host,
+    .history-form .btn {
+        grid-column: 1 / -1;
+    }
+
+    .history-form .btn {
+        justify-content: center;
+    }
+}
+
+.history-form > * {
+    min-width: 0;
+}
+
+/* ---------- P3.5 Tables that become stacked cards on phones ---------- */
+/* Columns that only fit on wider screens (they reappear in the stacked phone layout). */
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .history-table .col-purpose {
+        display: none;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .history-table .col-out {
+        display: none;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 1199.98px) {
+    .table-stack .col-purpose-xl {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .table-stack thead {
+        display: none;
+    }
+
+    .table-stack tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: .6rem 1rem;
+        padding: .9rem 0;
+        border-bottom: 1px solid var(--v-rule);
+    }
+
+    .table-stack tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .table-stack > tbody > tr > td {
+        display: block;
+        padding: 0;
+        border: 0;
+        white-space: normal;
+    }
+
+    .table-stack > tbody > tr > td.cell-wide {
+        grid-column: 1 / -1;
+    }
+
+    .table-stack > tbody > tr > td.text-end {
+        text-align: left !important;
+    }
+
+    .table-stack td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: .8rem;
+        color: var(--v-muted);
+    }
+
+    .table-stack .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ---------- P3.6 Secondary buttons ---------- */
+/* Bootstrap's grey outline text is below 4.5:1 on the dark theme; Check out is a key action,
+   so secondary buttons use the theme's ink and rule colours instead. */
+.btn-outline-secondary {
+    --bs-btn-color: var(--v-ink);
+    --bs-btn-border-color: var(--v-rule);
+    --bs-btn-bg: var(--v-surface);
+    --bs-btn-hover-color: var(--v-ink);
+    --bs-btn-hover-bg: var(--v-pass-tint);
+    --bs-btn-hover-border-color: var(--v-pass);
+    --bs-btn-active-color: var(--v-ink);
+    --bs-btn-active-bg: var(--v-pass-tint);
+    --bs-btn-active-border-color: var(--v-pass);
+}

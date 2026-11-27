@@ -1,11 +1,14 @@
 @model HomeIndexViewModel
-@inject NavigationHelper Nav
+@inject TimeProvider Clock
 @{
     ViewData["Title"] = "Dashboard";
     var onSite = Model.OnSite.Count;
+    var stats = Model.Stats;
+    var compact = onSite > 4; // more than a handful of passes reads better as a table
+    var nowUtc = Clock.GetUtcNow().UtcDateTime;
 }
 
-<section class="welcome">
+<section class="welcome dash-welcome">
     <div class="welcome-text">
         <p class="welcome-date">@Model.LocalNow.ToString("dddd d MMMM yyyy")</p>
         <h2 class="welcome-greeting">@Model.Greeting.</h2>
@@ -19,30 +22,89 @@
                 <text><strong>@onSite @(onSite == 1 ? "person is" : "people are")</strong> on site right now.</text>
             }
         </p>
-        <ul class="facts">
-            <li><span class="fact-num">@Model.ActiveHosts</span> staff can receive visitors</li>
-            <li><span class="fact-num">@Model.RegisteredVisitors</span> visitors registered</li>
-        </ul>
     </div>
 
-    <div class="welcome-passes" aria-label="People on site">
-        @if (onSite == 0)
-        {
-            <partial name="_EmptyState" model='new EmptyStateModel("bi-door-open", "The building is empty",
-                     "When someone checks in, their visitor pass appears here.")' />
-        }
-        else
-        {
-            foreach (var visit in Model.OnSite.Take(3))
+    <ul class="dash-facts" aria-label="Today at the front desk">
+        <li><span class="dash-fact-num">@stats.OnSiteNow</span> on site now</li>
+        <li><span class="dash-fact-num">@stats.CheckInsToday</span> checked in today</li>
+        <li><span class="dash-fact-num">@stats.CheckedOutToday</span> of them checked out</li>
+        <li><span class="dash-fact-num">@stats.TotalVisitors</span> visitors registered</li>
+    </ul>
+</section>
+
+<section class="on-site" aria-labelledby="onSiteHeading">
+    <header class="on-site-head">
+        <h2 id="onSiteHeading" class="panel-title">On site now</h2>
+        <a asp-controller="Visits" asp-action="History">Visit log</a>
+    </header>
+
+    @if (onSite == 0)
+    {
+        <partial name="_EmptyState" model='new EmptyStateModel("bi-door-open", "The building is empty",
+                 "When someone checks in, their visitor pass appears here.",
+                 "Check in a visitor", Url.Action("CheckIn", "Visits"))' />
+    }
+    else if (!compact)
+    {
+        <div class="pass-grid">
+            @foreach (var visit in Model.OnSite)
             {
-                <partial name="_VisitorPass" model="visit" />
+                <div class="pass-card">
+                    <partial name="_VisitorPass" model="visit" />
+                    <form asp-controller="Visits" asp-action="CheckOut" asp-route-id="@visit.Id" method="post">
+                        <input type="hidden" name="returnUrl" value="/" />
+                        <button type="submit" class="btn btn-outline-secondary w-100 justify-content-center"
+                                aria-label="Check out @visit.Visitor?.FullName">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                            Check out
+                        </button>
+                    </form>
+                </div>
             }
-            if (onSite > 3)
-            {
-                <p class="more-on-site">and @(onSite - 3) more on site</p>
-            }
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel">
+            <div class="table-responsive">
+                <table class="table table-hover table-stack">
+                    <thead>
+                        <tr>
+                            <th scope="col">Visitor</th>
+                            <th scope="col">Seeing</th>
+                            <th scope="col" class="col-purpose-xl">Purpose</th>
+                            <th scope="col">Arrived</th>
+                            <th scope="col"><span class="visually-hidden">Action</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var visit in Model.OnSite)
+                        {
+                            <tr>
+                                <td class="cell-wide">
+                                    <a asp-controller="Visits" asp-action="Pass" asp-route-id="@visit.Id" class="fw-bold">@visit.Visitor?.FullName</a>
+                                    <span class="cell-sub">@visit.Visitor?.Company</span>
+                                </td>
+                                <td data-label="Seeing">@visit.Host?.FullName <span class="cell-sub">@visit.Host?.Department</span></td>
+                                <td class="col-purpose-xl" data-label="Purpose">@visit.Purpose.GetDisplayName()</td>
+                                <td class="text-nowrap" data-label="Arrived">
+                                    @visit.CheckInTime.ToDisplayTime()
+                                    <span class="cell-sub">@visit.Duration(nowUtc).ToFriendlyDuration() so far</span>
+                                </td>
+                                <td class="text-end cell-wide">
+                                    <form asp-controller="Visits" asp-action="CheckOut" asp-route-id="@visit.Id" method="post">
+                                        <input type="hidden" name="returnUrl" value="/" />
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm"
+                                                aria-label="Check out @visit.Visitor?.FullName">Check out</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </section>
 
 <section class="panel increments" aria-labelledby="incrementsHeading">

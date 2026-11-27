@@ -1,0 +1,39 @@
+@model IReadOnlyList<VisitorPickRow>
+@*
+    Visitors to choose from in check-in step 1. Anyone already on site gets an
+    "On site" badge and a link to their pass instead of a Select button (no double check-in).
+*@
+<div class="table-responsive">
+    <table class="table table-hover pick-table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Phone</th>
+                <th scope="col" class="d-none d-md-table-cell">Company</th>
+                <th scope="col"><span class="visually-hidden">Action</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td class="fw-bold">@row.Visitor.FullName</td>
+                    <td class="text-nowrap">@row.Visitor.Phone</td>
+                    <td class="d-none d-md-table-cell">@(string.IsNullOrWhiteSpace(row.Visitor.Company) ? "—" : row.Visitor.Company)</td>
+                    <td class="text-end text-nowrap">
+                        @if (row.OpenVisit is not null)
+                        {
+                            <partial name="_StatusBadge" model="row.OpenVisit.Status" />
+                            <a asp-action="Pass" asp-route-id="@row.OpenVisit.Id" class="ms-2">View pass</a>
+                        }
+                        else
+                        {
+                            <a asp-action="CheckIn" asp-route-visitorId="@row.Visitor.Id" class="btn btn-primary btn-sm"
+                               aria-label="Select @row.Visitor.FullName">Select</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

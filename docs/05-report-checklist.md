@@ -11,7 +11,7 @@ The submission is **one PDF**. This table maps every component the brief asks fo
 | [ ] | Use case diagram | [03-design.md](03-design.md) §1 | Person 1 |
 | [ ] | Class diagram | [03-design.md](03-design.md) §4 | Person 1 + updates from P2 and P3 |
 | [ ] | Sequence diagram(s) | [03-design.md](03-design.md) §5 (P2), §6 (P3) | Persons 2 and 3 |
-| [ ] | Activity diagram | [03-design.md](03-design.md) §7 | Person 3 |
+| [x] | Activity diagram | [03-design.md](03-design.md) §7 | Person 3 |
 | [ ] | System architecture diagram (layers + data storage) | [03-design.md](03-design.md) §2, §3 | Person 1 |
 | [ ] | Testing and validation log: test plan + test-case table | [04-test-plan.md](04-test-plan.md) | Person 3 (QA lead), rows by all |
 | [ ] | GitHub repository link (public or view access) | `https://github.com/ceetek1/visma` | Person 1 |
