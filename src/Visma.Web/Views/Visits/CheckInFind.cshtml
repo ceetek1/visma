@@ -1,0 +1,66 @@
+@model CheckInFindViewModel
+@inject NavigationHelper Nav
+@{
+    ViewData["Title"] = "Check in";
+    var canRegister = Nav.Exists("Visitors", "Create");
+}
+
+<partial name="_CheckInSteps" model="1" />
+
+<section class="panel find-panel">
+    <form method="get" asp-action="CheckIn" role="search" class="find-form">
+        <label for="q" class="form-label">Phone, e-mail or name</label>
+        <div class="find-row">
+            <input id="q" name="q" type="search" class="form-control form-control-lg" value="@Model.Query"
+                   autocomplete="off" autofocus aria-describedby="qHelp" />
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                Find visitor
+            </button>
+        </div>
+        <p id="qHelp" class="form-text mb-0">
+            A full phone number or e-mail takes you straight to the next step. Spaces and dashes in phone numbers don't matter.
+        </p>
+    </form>
+</section>
+
+@if (Model.Searched)
+{
+    if (Model.Results.Count > 0)
+    {
+        <section class="panel" aria-labelledby="resultsHeading">
+            <header class="panel-head">
+                <h2 id="resultsHeading" class="panel-title">
+                    @Model.Results.Count @(Model.Results.Count == 1 ? "visitor matches" : "visitors match") “@Model.Query”
+                </h2>
+            </header>
+            <partial name="_VisitorPickTable" model="Model.Results" />
+        </section>
+    }
+    else
+    {
+        <section class="panel">
+            @if (canRegister)
+            {
+                <partial name="_EmptyState" model='new EmptyStateModel("bi-person-x", "No visitor found",
+                         $"Nobody matches “{Model.Query}”. Check the spelling, or register them as a new visitor.",
+                         "Register them", Url.Action("Create", "Visitors", new { phone = Model.Query }))' />
+            }
+            else
+            {
+                <partial name="_EmptyState" model='new EmptyStateModel("bi-person-x", "No visitor found",
+                         $"Nobody matches “{Model.Query}”. Check the spelling. Registering new visitors arrives with Increment 1.")' />
+            }
+        </section>
+    }
+}
+else if (Model.Recent.Count > 0)
+{
+    <section class="panel" aria-labelledby="recentHeading">
+        <header class="panel-head">
+            <h2 id="recentHeading" class="panel-title">Recently registered</h2>
+            <p class="panel-sub">Or pick someone who registered recently.</p>
+        </header>
+        <partial name="_VisitorPickTable" model="Model.Recent" />
+    </section>
+}

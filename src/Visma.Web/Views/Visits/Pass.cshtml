@@ -1,0 +1,32 @@
+@model Visit
+@{
+    ViewData["Title"] = "Visitor pass";
+    var open = Model.Status == VisitStatus.CheckedIn;
+}
+
+@if (open)
+{
+    <partial name="_CheckInSteps" model="3" />
+}
+
+<section class="pass-page" aria-label="Visitor pass">
+    <partial name="_VisitorPass" model="Model" />
+
+    <div class="pass-page-actions">
+        <a asp-action="CheckIn" class="btn btn-primary">
+            <i class="bi bi-person-plus" aria-hidden="true"></i>
+            Check in another visitor
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Back to dashboard</a>
+        @if (open)
+        {
+            <form asp-action="CheckOut" asp-route-id="@Model.Id" method="post" class="d-inline">
+                <input type="hidden" name="returnUrl" value="@Url.Action("Pass", new { id = Model.Id })" />
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    Check out
+                </button>
+            </form>
+        }
+    </div>
+</section>

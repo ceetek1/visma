@@ -1,0 +1,89 @@
+@model CheckInDetailsViewModel
+@{
+    ViewData["Title"] = "Check in";
+    var v = Model.Visitor;
+    var hereUrl = Url.Action("CheckIn", new { visitorId = v.Id });
+}
+
+<partial name="_CheckInSteps" model="2" />
+
+<section class="panel visitor-summary" aria-label="Visitor being checked in">
+    <div>
+        <p class="visitor-summary-name">@v.FullName</p>
+        <p class="visitor-summary-meta">
+            <span class="text-nowrap"><i class="bi bi-telephone" aria-hidden="true"></i> @v.Phone</span>
+            @if (!string.IsNullOrWhiteSpace(v.Company))
+            {
+                <span><i class="bi bi-building" aria-hidden="true"></i> @v.Company</span>
+            }
+        </p>
+    </div>
+    <a asp-action="CheckIn" class="visitor-summary-change">Change visitor</a>
+</section>
+
+@if (Model.OpenVisit is not null)
+{
+    @* Already on site: refuse up front (FR-13) and offer the way out instead. *@
+    <section class="panel already-in" aria-labelledby="alreadyInHeading">
+        <div class="flash flash-error mb-3" role="alert">
+            <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i>
+            <span id="alreadyInHeading">@v.FullName is already checked in. Check them out before checking in again.</span>
+        </div>
+        <div class="already-in-body">
+            <partial name="_VisitorPass" model="Model.OpenVisit" />
+            <form asp-action="CheckOut" asp-route-id="@Model.OpenVisit.Id" method="post">
+                <input type="hidden" name="returnUrl" value="@hereUrl" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    Check out @v.FullName
+                </button>
+            </form>
+        </div>
+    </section>
+}
+else
+{
+    <section class="panel checkin-form-panel" aria-labelledby="formHeading">
+        <header class="panel-head">
+            <h2 id="formHeading" class="panel-title">Who are they here to see, and why?</h2>
+        </header>
+
+        <form asp-action="CheckIn" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="form-errors" role="alert"></div>
+            <input type="hidden" asp-for="Form.VisitorId" />
+
+            <div class="mb-3">
+                <label asp-for="Form.HostId" class="form-label">Person being visited</label>
+                <select asp-for="Form.HostId" asp-items="Model.Hosts" class="form-select">
+                    <option value="">Choose a staff member…</option>
+                </select>
+                <span asp-validation-for="Form.HostId" class="field-validation-error"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Form.Purpose" class="form-label">Purpose of visit</label>
+                <select asp-for="Form.Purpose" asp-items="Html.GetEnumSelectList<VisitPurpose>()" class="form-select">
+                    <option value="">Choose a purpose…</option>
+                </select>
+                <span asp-validation-for="Form.Purpose" class="field-validation-error"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Form.Notes" class="form-label">Notes <span class="label-optional">(optional)</span></label>
+                <textarea asp-for="Form.Notes" class="form-control" rows="3" maxlength="250"
+                          aria-describedby="notesHelp"></textarea>
+                <p id="notesHelp" class="form-text">For example “Final-year project review”. Up to 250 characters.</p>
+                <span asp-validation-for="Form.Notes" class="field-validation-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                Check in
+            </button>
+        </form>
+    </section>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

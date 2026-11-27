@@ -790,3 +790,168 @@ h1, h2, h3, .display-font {
 /* =============================================================================
    Feature styles: Person 3 (Visits & Dashboard) add below this line
    ============================================================================= */
+
+/* ---------- P3.1 Check-in wizard ---------- */
+/* The three steps read like the stages of signing the paper logbook. */
+.checkin-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.75rem;
+    color: var(--v-muted);
+}
+
+.checkin-step {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+}
+
+.checkin-step-no {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--v-rule);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.checkin-step.is-current {
+    color: var(--v-ink);
+    font-weight: 700;
+}
+
+.checkin-step.is-current .checkin-step-no {
+    border-color: var(--v-pass);
+    color: var(--v-pass);
+}
+
+.checkin-step.is-done .checkin-step-no {
+    background: var(--v-pass);
+    border-color: var(--v-pass);
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .checkin-step.is-done .checkin-step-no {
+    color: #08140F;
+}
+
+.find-panel {
+    max-width: 760px;
+}
+
+.find-row {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: .5rem;
+}
+
+.find-row .form-control {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.find-row .btn {
+    white-space: nowrap;
+}
+
+.pick-table td .status {
+    vertical-align: middle;
+}
+
+.visitor-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 760px;
+}
+
+.visitor-summary-name {
+    font-family: var(--v-font-display);
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    margin: 0 0 .3rem;
+}
+
+.visitor-summary-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    color: var(--v-muted);
+    margin: 0;
+}
+
+.visitor-summary-change {
+    white-space: nowrap;
+}
+
+.checkin-form-panel,
+.already-in {
+    max-width: 760px;
+}
+
+.label-optional {
+    font-weight: 400;
+    color: var(--v-muted);
+}
+
+.form-errors ul {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--v-signal);
+    border-radius: var(--v-radius-control);
+    background: var(--v-signal-tint);
+    color: var(--v-ink);
+    font-size: 1rem;
+}
+
+.form-errors.validation-summary-valid {
+    display: none;
+}
+
+.already-in-body {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+}
+
+/* ---------- P3.2 Visitor pass page ---------- */
+.pass-page {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+}
+
+.pass-page .pass {
+    max-width: 420px;
+}
+
+.pass-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+}
+
+@media (max-width: 575.98px) {
+    .find-row {
+        flex-direction: column;
+    }
+
+    .visitor-summary {
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .pass-page-actions > *,
+    .pass-page-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
