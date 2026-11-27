@@ -8,10 +8,10 @@ All diagrams are written in [Mermaid](https://mermaid.js.org/), which GitHub ren
 | Use case | Final | Person 1 |
 | Layered architecture | Final | Person 1 |
 | Entity–relationship (data storage) | Final | Person 1 |
-| Class | Final for Core/Data; services added by P2/P3 | Person 1 (+ P2, P3) |
+| Class | Final for Core/Data and Increment 2; Person 2 adds their services | Person 1 (+ P2, P3) |
 | Sequence: register visitor | **Draft**: confirm against your code | Person 2 |
-| Sequence: check in | **Draft**: confirm against your code | Person 3 |
-| Activity: visit lifecycle | **Draft**: confirm against your code | Person 3 |
+| Sequence: check in | Final (matches `VisitsController` / `VisitService`) | Person 3 |
+| Activity: visit lifecycle | Final | Person 3 |
 
 ---
 
@@ -270,13 +270,67 @@ classDiagram
 
     IVisitorService ..> IVisitorRepository : uses
     IHostService ..> IHostRepository : uses
-    IVisitService ..> IVisitRepository : uses
-    IVisitService ..> IVisitorRepository : uses
-    IVisitService ..> IHostRepository : uses
+
+    class VisitService {
+        -IVisitRepository visits
+        -IVisitorRepository visitors
+        -IHostRepository hosts
+        -TimeProvider clock
+        +CheckInAsync(visitorId, hostId, purpose, notes) OperationResult~Visit~
+        +CheckOutAsync(int visitId) OperationResult~Visit~
+        +GetActiveVisitsAsync()
+        +GetHistoryAsync(from, to, hostId, visitorId)
+        +GetDashboardStatsAsync() DashboardStats
+    }
+    class DashboardStats {
+        <<record>>
+        +int OnSiteNow
+        +int CheckInsToday
+        +int CheckedOutToday
+        +int TotalVisitors
+    }
+    class VisitsController {
+        +CheckIn(string? q, int? visitorId) IActionResult
+        +CheckIn(CheckInFormModel form) IActionResult
+        +Pass(int id) IActionResult
+        +CheckOut(int id, string? returnUrl) IActionResult
+        +History(DateOnly? from, DateOnly? to, int? hostId) IActionResult
+    }
+    class HomeController {
+        +Index() IActionResult
+    }
+    class CheckInFormModel {
+        +int VisitorId
+        +int? HostId
+        +VisitPurpose? Purpose
+        +string? Notes
+    }
+    class HomeIndexViewModel {
+        +IReadOnlyList~Visit~ OnSite
+        +DashboardStats Stats
+    }
+    class VisitHistoryViewModel {
+        +DateOnly From
+        +DateOnly To
+        +int? HostId
+        +IReadOnlyList~Visit~ Visits
+    }
+
+    VisitService ..|> IVisitService
+    VisitService ..> IVisitRepository : uses
+    VisitService ..> IVisitorRepository : uses
+    VisitService ..> IHostRepository : uses
+    VisitService ..> DashboardStats : creates
+    VisitsController --> IVisitService
+    VisitsController ..> CheckInFormModel : binds
+    VisitsController ..> VisitHistoryViewModel : builds
+    HomeController --> IVisitService
+    HomeController ..> HomeIndexViewModel : builds
 ```
 
-> **P2/P3:** when your `VisitorService`, `HostService`, `VisitService` and controllers exist, add them here
-> (`VisitorService ..|> IVisitorService`, `VisitorsController --> IVisitorService`, …).
+> Person 3's classes (Increment 2) are in the diagram. Controllers depend only on the `IVisitService`
+> interface; `Program.cs` binds it to `VisitService`.
+> **Person 2:** add `VisitorService ..|> IVisitorService`, `HostService ..|> IHostService` and your controllers here.
 
 ## 5. Sequence diagram: register a new visitor (DRAFT, Person 2)
 
@@ -311,7 +365,10 @@ sequenceDiagram
     end
 ```
 
-## 6. Sequence diagram: check a visitor in (DRAFT, Person 3)
+## 6. Sequence diagram: check a visitor in (Person 3)
+
+Matches `VisitsController.CheckIn` (POST) and `VisitService.CheckInAsync`. The service checks its rules in the order
+shown; the first failure is returned to the controller as `OperationResult.Failure` and shown on the form.
 
 ```mermaid
 sequenceDiagram
@@ -323,49 +380,65 @@ sequenceDiagram
     participant R as IVisitRepository
     participant T as TimeProvider
 
-    Officer->>C: POST /Visits/CheckIn (visitorId, hostId, purpose, notes)
-    C->>S: CheckInAsync(visitorId, hostId, purpose, notes)
-    S->>VR: GetByIdAsync(visitorId)
-    VR-->>S: visitor (or null)
-    S->>HR: GetByIdAsync(hostId)
-    HR-->>S: host (or null)
-    alt visitor missing OR host missing/inactive
-        S-->>C: Failure(reason)
+    Officer->>C: POST /Visits/CheckIn (VisitorId, HostId, Purpose, Notes + antiforgery token)
+    C->>VR: GetByIdAsync(visitorId)
+    alt visitor not found
+        C-->>Officer: Redirect to step 1 + "Visitor not found."
+    else ModelState invalid (no host or purpose chosen, notes too long)
+        C-->>Officer: Re-show step 2 with field errors
     else
-        S->>R: GetActiveVisitForVisitorAsync(visitorId)
-        R-->>S: open visit (or null)
-        alt already on site
-            S-->>C: Failure("already checked in")
+        C->>S: CheckInAsync(visitorId, hostId, purpose, notes)
+        S->>VR: GetByIdAsync(visitorId)
+        S->>HR: GetByIdAsync(hostId)
+        alt host missing or inactive, or purpose undefined
+            S-->>C: Failure("Host not found." / "… is no longer receiving visitors. …" / "Choose a purpose …")
+            C-->>Officer: Re-show step 2 with the message
         else
-            S->>T: GetUtcNow()
-            T-->>S: now
-            S->>R: AddAsync(new Visit{…, CheckInTime = now})
-            S-->>C: Success(visit)
+            S->>R: GetActiveVisitForVisitorAsync(visitorId)
+            R-->>S: open visit (or null)
+            alt already on site
+                S-->>C: Failure("… is already checked in. Check them out before checking in again.")
+                C-->>Officer: Re-show step 2: message, current pass and a Check out button
+            else
+                S->>T: GetUtcNow()
+                T-->>S: now (UTC)
+                S->>R: AddAsync(Visit{…, Notes trimmed or null, CheckInTime = now})
+                S-->>C: Success(visit with Visitor and Host)
+                C-->>Officer: 302 to /Visits/Pass/{id} + "Checked in … to see …."
+            end
         end
     end
-    C-->>Officer: Visitor pass (success) or error message
 ```
 
-## 7. Activity diagram: visit lifecycle (DRAFT, Person 3)
+## 7. Activity diagram: visit lifecycle (Person 3)
+
+From arrival to departure, as the front-desk officer works through VISMA. Registration (the left branch) is
+Person 2's Increment 1; everything from "Already on site?" onwards is Increment 2.
 
 ```mermaid
 flowchart TD
     start((●)) --> arrive[Visitor arrives at front desk]
-    arrive --> lookup[Officer searches phone / e-mail]
-    lookup --> found{Visitor found?}
-    found -- No --> register[Register visitor]
+    arrive --> lookup[Check in, step 1: search phone, e-mail or name]
+    lookup --> exact{Exact phone / e-mail match?}
+    exact -- Yes --> onsite
+    exact -- No --> list{Anyone in the result list?}
+    list -- No --> register[Register visitor - Increment 1]
     register --> valid{Details valid?}
     valid -- No --> fix[Show field errors] --> register
-    valid -- Yes --> choose
-    found -- Yes --> onsite{Already on site?}
-    onsite -- Yes --> refuse[Refuse: show existing visit] --> stop1((◉))
-    onsite -- No --> choose[Select active host and purpose]
-    choose --> checkin[Record check-in time]
-    checkin --> pass[Show visitor pass; visitor goes in]
+    valid -- Yes --> onsite
+    list -- Yes --> pick[Officer selects the visitor] --> onsite
+    onsite{Already on site?}
+    onsite -- Yes --> refuse[Refuse: show current pass and Check out button] --> stop1((◉))
+    onsite -- No --> choose[Step 2: select active host, purpose, optional notes]
+    choose --> rules{Host active and purpose chosen?}
+    rules -- No --> choose
+    rules -- Yes --> checkin[Record check-in time - UTC]
+    checkin --> pass[Step 3: show visitor pass; visitor goes in]
     pass --> leave[Visitor returns to desk]
-    leave --> checkout[Officer clicks Check out]
+    leave --> checkout[Officer clicks Check out on the dashboard or pass]
     checkout --> already{Already checked out?}
-    already -- Yes --> refuse2[Refuse: show message] --> stop2((◉))
-    already -- No --> record[Record check-out time and duration]
-    record --> stop3((◉))
+    already -- Yes --> refuse2[Refuse: This visit was already checked out.] --> stop2((◉))
+    already -- No --> record[Record check-out time; show duration]
+    record --> history[Visit appears in the visit log]
+    history --> stop3((◉))
 ```
