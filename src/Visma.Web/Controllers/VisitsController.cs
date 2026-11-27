@@ -18,7 +18,8 @@ public class VisitsController(
     IVisitService visitService,
     IVisitRepository visits,
     IVisitorRepository visitors,
-    IHostRepository hosts) : Controller
+    IHostRepository hosts,
+    TimeProvider clock) : Controller
 {
     /// <summary>
     /// GET /Visits/CheckIn : step 1 (find the visitor) or, with ?visitorId=, step 2 (host and purpose).
@@ -123,6 +124,39 @@ public class VisitsController(
         return Url.IsLocalUrl(returnUrl)
             ? LocalRedirect(returnUrl)
             : RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+    /// <summary>
+    /// GET /Visits/History?from=2026-11-20&amp;to=2026-11-26&amp;hostId=3 : the visit log (FR-17).
+    /// Dates are the front desk's local calendar days (default: the last 7 days, today included);
+    /// they are turned into a UTC range [from 00:00, to + 1 day 00:00) because that is how times are stored.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> History(DateOnly? from, DateOnly? to, int? hostId)
+    {
+        var lastDay = to ?? LocalDay.Today(clock);
+        var firstDay = from ?? lastDay.AddDays(-6);
+        var allHosts = HostOptions(await hosts.GetAllAsync(), hostId, markInactive: true);
+
+        if (firstDay > lastDay)
+        {
+            return View(new VisitHistoryViewModel
+            {
+                From = firstDay, To = lastDay, HostId = hostId, Hosts = allHosts,
+                FilterError = "The start date is after the end date. Pick a start date on or before the end date.",
+            });
+        }
+
+        var list = await visitService.GetHistoryAsync(
+            LocalDay.StartUtc(firstDay, clock),
+            LocalDay.StartUtc(lastDay.AddDays(1), clock),
+            hostId,
+            visitorId: null);
+
+        return View(new VisitHistoryViewModel
+        {
+            From = firstDay, To = lastDay, HostId = hostId, Hosts = allHosts, Visits = list,
+        });
     }
 
     /// <summary>Step 2 model: the visitor, any open visit, and active hosts grouped by department.</summary>
