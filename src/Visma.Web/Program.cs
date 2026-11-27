@@ -32,7 +32,7 @@ builder.Services.AddVismaData($"Data Source={dbPath}");
 // builder.Services.AddScoped<IHostService, HostService>();
 //
 // Person 3 (Increment 2):
-// builder.Services.AddScoped<IVisitService, VisitService>();
+builder.Services.AddScoped<IVisitService, VisitService>();
 
 var app = builder.Build();
 
